@@ -3,15 +3,11 @@ import {
   exportToBlob,
   getTextFromElements,
   MIME_TYPES,
-  TTDDialog,
-  TTDStreamFetch,
 } from "@excalidraw/excalidraw";
 import { getDataURL } from "@excalidraw/excalidraw/data/blob";
 import { safelyParseJSON } from "@excalidraw/common";
 
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-
-import { TTDIndexedDBAdapter } from "../data/TTDStorage";
 
 export const AIComponents = ({
   excalidrawAPI,
@@ -99,26 +95,6 @@ export const AIComponents = ({
             throw new Error("Generation failed (invalid response)");
           }
         }}
-      />
-
-      <TTDDialog
-        onTextSubmit={async (props) => {
-          const { onChunk, onStreamCreated, signal, messages } = props;
-
-          const result = await TTDStreamFetch({
-            url: `${
-              import.meta.env.VITE_APP_AI_BACKEND
-            }/v1/ai/text-to-diagram/chat-streaming`,
-            messages,
-            onChunk,
-            onStreamCreated,
-            extractRateLimits: true,
-            signal,
-          });
-
-          return result;
-        }}
-        persistenceAdapter={TTDIndexedDBAdapter}
       />
     </>
   );

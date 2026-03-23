@@ -669,6 +669,18 @@ export interface ExcalidrawProps {
     appState: AppState,
   ) => JSX.Element | null;
   aiEnabled?: boolean;
+  /**
+   * AI autocomplete: when user triggers autocomplete (Ctrl+.) while editing text,
+   * this callback is invoked with the current text. Return { type: "text", value }
+   * to insert text, or { type: "diagram", mermaid } to insert a diagram.
+   */
+  onAIAutocompleteRequest?: (
+    prompt: string,
+  ) => Promise<
+    | { type: "text"; value: string }
+    | { type: "diagram"; mermaid: string }
+    | null
+  >;
   showDeprecatedFonts?: boolean;
   renderScrollbars?: boolean;
   /**
@@ -984,6 +996,7 @@ export interface ExcalidrawImperativeAPI {
   ) => UnsubscribeCallback;
   onStateChange: InstanceType<typeof App>["onStateChange"];
   onEvent: InstanceType<typeof App>["onEvent"];
+  insertMermaidDiagram: InstanceType<typeof App>["insertMermaidDiagram"];
 }
 
 export type FrameNameBounds = {

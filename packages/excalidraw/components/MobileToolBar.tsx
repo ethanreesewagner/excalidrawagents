@@ -178,16 +178,16 @@ export const MobileToolBar = ({
     ? activeTool.type === "text"
       ? TextIcon
       : activeTool.type === "image"
-      ? ImageIcon
-      : activeTool.type === "frame"
-      ? frameToolIcon
-      : activeTool.type === "embeddable"
-      ? EmbedIcon
-      : activeTool.type === "laser"
-      ? laserPointerToolIcon
-      : activeTool.type === "magicframe"
-      ? MagicIcon
-      : extraToolsIcon
+        ? ImageIcon
+        : activeTool.type === "frame"
+          ? frameToolIcon
+          : activeTool.type === "embeddable"
+            ? EmbedIcon
+            : activeTool.type === "laser"
+              ? laserPointerToolIcon
+              : activeTool.type === "magicframe"
+                ? MagicIcon
+                : extraToolsIcon
     : extraToolsIcon;
 
   return (
@@ -273,10 +273,10 @@ export const MobileToolBar = ({
             lastActiveGenericShape === "rectangle"
               ? "toolBar.rectangle"
               : lastActiveGenericShape === "diamond"
-              ? "toolBar.diamond"
-              : lastActiveGenericShape === "ellipse"
-              ? "toolBar.ellipse"
-              : "toolBar.rectangle",
+                ? "toolBar.diamond"
+                : lastActiveGenericShape === "ellipse"
+                  ? "toolBar.ellipse"
+                  : "toolBar.rectangle",
           ),
         )}
         data-testid="toolbar-rectangle"
@@ -458,7 +458,8 @@ export const MobileToolBar = ({
           <div style={{ margin: "6px 0", fontSize: 14, fontWeight: 600 }}>
             Generate
           </div>
-          {app.props.aiEnabled !== false && <TTDDialogTriggerTunnel.Out />}
+          {/* {app.props.aiEnabled !== false && <TTDDialogTriggerTunnel.Out />} */}
+          {/* 
           <DropdownMenu.Item
             onSelect={() => app.setOpenDialog({ name: "ttd", tab: "mermaid" })}
             icon={mermaidLogoIcon}
@@ -466,6 +467,7 @@ export const MobileToolBar = ({
           >
             {t("toolBar.mermaidToExcalidraw")}
           </DropdownMenu.Item>
+          */}
           {app.props.aiEnabled !== false && app.plugins.diagramToCode && (
             <>
               <DropdownMenu.Item

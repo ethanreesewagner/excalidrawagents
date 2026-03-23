@@ -1,4 +1,5 @@
 @import "../packages/excalidraw/css/variables.module.scss";
+@import "./frutiger-aero.scss";
 
 .excalidraw {
   --color-primary-contrast-offset: #625ee0; // to offset Chubb illusion
@@ -35,9 +36,11 @@
         background-color: #ecfdf5;
         color: #064e3c;
       }
+
       &.highlighted {
         color: var(--color-promo);
         font-weight: 700;
+
         .dropdown-menu-item__icon g {
           stroke-width: 2;
         }

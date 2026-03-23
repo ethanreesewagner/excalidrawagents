@@ -4,6 +4,7 @@
 .env.production.local
 .env.test.local
 .envrc
+*.env
 .eslintcache
 .history
 .idea

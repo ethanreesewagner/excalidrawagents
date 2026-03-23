@@ -96,6 +96,7 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
     validateEmbeddable,
     renderEmbeddable,
     aiEnabled,
+    onAIAutocompleteRequest,
     showDeprecatedFonts,
     renderScrollbars,
   } = props;
@@ -206,6 +207,7 @@ const ExcalidrawBase = (props: ExcalidrawProps) => {
           validateEmbeddable={validateEmbeddable}
           renderEmbeddable={renderEmbeddable}
           aiEnabled={aiEnabled !== false}
+          onAIAutocompleteRequest={onAIAutocompleteRequest}
           showDeprecatedFonts={showDeprecatedFonts}
           renderScrollbars={renderScrollbars}
         >

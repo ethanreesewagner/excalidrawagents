@@ -780,6 +780,7 @@ class App extends React.Component<AppProps, AppState> {
       onUserFollow: (cb) => this.onUserFollowEmitter.on(cb),
       onStateChange: this.onStateChange,
       onEvent: this.onEvent,
+      insertMermaidDiagram: this.insertMermaidDiagram,
     };
     return api;
   }
@@ -4022,6 +4023,31 @@ class App extends React.Component<AppProps, AppState> {
       this.scrollToContent(duplicatedElements, {
         fitToContent: true,
         canvasOffsets: this.getEditorUIOffsets(),
+      });
+    }
+  };
+
+  insertMermaidDiagram = async (mermaid: string) => {
+    try {
+      const api = await import("@excalidraw/mermaid-to-excalidraw");
+      const { elements: skeletonElements, files = {} } =
+        await api.parseMermaidToExcalidraw(mermaid);
+      const elements = convertToExcalidrawElements(skeletonElements, {
+        regenerateIds: true,
+      });
+      this.addElementsFromPasteOrLibrary({
+        elements,
+        files,
+        position: "center",
+        fitToContent: true,
+      });
+    } catch (err) {
+      if (isDevEnv()) {
+        console.error("Failed to insert mermaid diagram:", err);
+      }
+      this.setToast({
+        message: t("toast.mermaidInsertFailed"),
+        duration: 3000,
       });
     }
   };

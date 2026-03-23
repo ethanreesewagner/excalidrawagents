@@ -420,10 +420,96 @@ export const textWysiwyg = ({
       }
 
       app.scene.mutateElement(updatedTextElement, { x: coordX, y: coordY });
+
+      const dist = width / 2 + 16;
+      const dx = dist * Math.cos(angle);
+      const dy = dist * Math.sin(angle);
+
+      Object.assign(aiButton.style, {
+        left: `${viewportX + dx * appState.zoom.value}px`,
+        top: `${viewportY + dy * appState.zoom.value}px`,
+        transform: getTransform(
+          28,
+          28,
+          angle,
+          appState,
+          28,
+          28,
+        ),
+      });
     }
   };
 
   const editable = document.createElement("textarea");
+  const aiButton = document.createElement("button");
+
+  const triggerAIAutocomplete = () => {
+    const onAutocomplete = (
+      app.props as {
+        onAIAutocompleteRequest?: (
+          p: string,
+        ) => Promise<
+          | { type: "text"; value: string }
+          | { type: "diagram"; mermaid: string }
+          | { type: "elements"; value: any[] }
+          | null
+        >;
+      }
+    ).onAIAutocompleteRequest;
+    if (onAutocomplete && editable.value.trim()) {
+      aiButton.innerHTML = "⏳";
+      onAutocomplete(editable.value)
+        .then((result) => {
+          if (!result || isDestroyed) {
+            aiButton.innerHTML = "✨";
+            return;
+          }
+          if (result.type === "text" && result.value) {
+            const pos = editable.selectionStart;
+            const before = editable.value.slice(0, pos);
+            const after = editable.value.slice(pos);
+            editable.value = before + result.value + after;
+            editable.selectionStart = editable.selectionEnd =
+              pos + result.value.length;
+            onChange?.(editable.value);
+            editable.dispatchEvent(new Event("input"));
+          } else if (result.type === "diagram" && result.mermaid) {
+            editable.value = "";
+            onChange?.("");
+            submittedViaKeyboard = true;
+            handleSubmit();
+            queueMicrotask(() => {
+              (
+                app as { insertMermaidDiagram?: (m: string) => Promise<void> }
+              ).insertMermaidDiagram?.(result.mermaid);
+            });
+          } else if (result.type === "elements" && Array.isArray(result.value)) {
+            editable.value = "";
+            onChange?.("");
+            submittedViaKeyboard = true;
+            handleSubmit();
+            queueMicrotask(() => {
+              const currentElements = app.scene.getElementsIncludingDeleted();
+              const newElements = [...currentElements];
+              result.value.forEach((p: any) => {
+                if (!p.id) p.id = Math.random().toString(36).substring(2, 9);
+                if (!p.version) p.version = 1;
+                if (!p.versionNonce) p.versionNonce = Math.floor(Math.random() * 10000000);
+                if (typeof p.x !== "number") p.x = 100;
+                if (typeof p.y !== "number") p.y = 100;
+                newElements.push(p);
+              });
+              (app as any).updateScene({ elements: newElements });
+            });
+          }
+          aiButton.innerHTML = "✨";
+        })
+        .catch((err) => {
+          console.error(err);
+          aiButton.innerHTML = "✨";
+        });
+    }
+  };
 
   editable.dir = "auto";
   editable.tabIndex = 0;
@@ -460,6 +546,32 @@ export const textWysiwyg = ({
     boxSizing: "content-box",
   });
   editable.value = element.originalText;
+
+  aiButton.innerHTML = "✨";
+  aiButton.className = "excalidraw-wysiwyg-ai-button";
+  aiButton.title = "AI Autocomplete / Diagram (Cmd+.)";
+  Object.assign(aiButton.style, {
+    position: "absolute",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "28px",
+    height: "28px",
+    background: "var(--color-primary)",
+    color: "white",
+    border: "none",
+    borderRadius: "50%",
+    cursor: "pointer",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    zIndex: "var(--zIndex-wysiwyg)",
+    fontSize: "14px",
+    pointerEvents: "auto"
+  });
+  aiButton.onmousedown = (e) => {
+    e.preventDefault(); // keep focus on textarea
+    triggerAIAutocomplete();
+  };
+
   updateWysiwygStyle();
 
   const getCaretIndexFromInitialSceneCoords = () => {
@@ -495,8 +607,8 @@ export const textWysiwyg = ({
       layout.textAlign === "center"
         ? (layout.width - lineWidth) / 2
         : layout.textAlign === "right"
-        ? layout.width - lineWidth
-        : 0;
+          ? layout.width - lineWidth
+          : 0;
     const relativeX = localX - lineStartX;
 
     if (!line.text) {
@@ -643,6 +755,14 @@ export const textWysiwyg = ({
       app.actionManager.executeAction(actionDecreaseFontSize);
     } else if (actionIncreaseFontSize.keyTest(event)) {
       app.actionManager.executeAction(actionIncreaseFontSize);
+    } else if (
+      event[KEYS.CTRL_OR_CMD] &&
+      event.key === KEYS.PERIOD &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      event.preventDefault();
+      triggerAIAutocomplete();
     } else if (event.key === KEYS.ESCAPE) {
       event.preventDefault();
       submittedViaKeyboard = true;
@@ -763,9 +883,9 @@ export const textWysiwyg = ({
           startIndices.concat(
             idx
               ? // curr line index is prev line's start + prev line's length + \n
-                startIndices[idx - 1] + lines[idx - 1].length + 1
+              startIndices[idx - 1] + lines[idx - 1].length + 1
               : // first selected line
-                selectionStart,
+              selectionStart,
           ),
         [] as number[],
       )
@@ -859,6 +979,7 @@ export const textWysiwyg = ({
     unbindOnScroll();
 
     editable.remove();
+    aiButton.remove();
   };
 
   const bindBlurEvent = (event?: MouseEvent) => {
@@ -1014,9 +1135,11 @@ export const textWysiwyg = ({
     window.addEventListener("pointerdown", onPointerDown, { capture: true });
   });
   window.addEventListener("beforeunload", handleSubmit);
-  excalidrawContainer
-    ?.querySelector(".excalidraw-textEditorContainer")!
-    .appendChild(editable);
+  const textEditorContainer = excalidrawContainer?.querySelector(".excalidraw-textEditorContainer");
+  if (textEditorContainer) {
+    textEditorContainer.appendChild(editable);
+    textEditorContainer.appendChild(aiButton);
+  }
 
   return handleSubmit;
 };

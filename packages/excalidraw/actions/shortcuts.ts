@@ -56,7 +56,8 @@ export type ShortcutName =
   | "imageExport"
   | "commandPalette"
   | "searchMenu"
-  | "toolLock";
+  | "toolLock"
+  | "aiAutocomplete";
 
 const shortcutMap: Record<ShortcutName, string[]> = {
   toggleTheme: [getShortcutKey("Shift+Alt+D")],
@@ -119,6 +120,7 @@ const shortcutMap: Record<ShortcutName, string[]> = {
   searchMenu: [getShortcutKey("CtrlOrCmd+F")],
   wrapSelectionInFrame: [],
   toolLock: [getShortcutKey("Q")],
+  aiAutocomplete: [getShortcutKey("CtrlOrCmd+.")],
 };
 
 export const getShortcutFromShortcutName = (name: ShortcutName, idx = 0) => {
