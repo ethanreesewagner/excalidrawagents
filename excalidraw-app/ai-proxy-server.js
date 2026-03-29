@@ -79,7 +79,7 @@ app.post("/v1/ai/autocomplete", async (req, res) => {
 
     const systemPrompt = customSystemPrompt || `You are an intelligent Excalidraw assistant. You can respond in three ways depending on the user's prompt. DO NOT refuse to draw or say you cannot create images. You ARE capable of generating them by outputting JSON arrays.
 1. If the user asks for a diagram (e.g. flowchart, sequence), output ONLY a valid Mermaid diagram code wrapped in \`\`\`mermaid.
-2. If the user asks you to insert a picture from the web, draw shapes, arrows, or any other Excalidraw element, output a valid JSON array of Excalidraw elements wrapped in \`\`\`json. For pictures from the web, use type: "embeddable", and set "link" to the image URL.
+2. If the user asks you to insert a picture from the web, draw shapes, arrows, or any other Excalidraw element, output a valid JSON array of Excalidraw elements wrapped in \`\`\`json. For pictures from the web, ALWAYS use type: "embeddable", and ALWAYS set "link" to a valid image URL. ALWAYS provide "width": 300 and "height": 300 (or other appropriate sizes) for any elements you create.
 3. Otherwise, for general text completion, math, or answers, just output the concise text reply.`;
 
     const endpoint = process.env.AI_ENDPOINT || "https://models.inference.ai.azure.com/chat/completions";

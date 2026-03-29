@@ -4,6 +4,7 @@ import {
   THEME,
   useExcalidrawAPI,
   mutateElement,
+  convertToExcalidrawElements,
 } from "@excalidraw/excalidraw";
 import {
   messageCircleIcon,
@@ -13,6 +14,7 @@ import {
 import { LinkButton } from "@excalidraw/excalidraw/components/LinkButton";
 import { useUIAppState } from "@excalidraw/excalidraw/context/ui-appState";
 import { useState } from "react";
+import { convertLinksToImages } from "../data/aiUtils";
 
 import "./AppSidebar.scss";
 
@@ -28,7 +30,7 @@ export const AppSidebar = () => {
     setIsAiLoading(true);
 
     // We send just the selected elements or the whole scene if none selected
-    let targetElements = api.getSceneElements().filter((el: any) => {
+    let targetElements: readonly any[] = api.getSceneElements().filter((el: any) => {
       // Very naive logic to get active selection
       return Object.keys(api.getAppState().selectedElementIds).includes(el.id);
     });
@@ -60,25 +62,23 @@ export const AppSidebar = () => {
               const currentElements = api.getSceneElements();
               const currentIds = new Set(currentElements.map((e: any) => e.id));
               const newElements = currentElements.map((el) => {
-                const patch = patched.find((p) => p.id === el.id);
+                const patch = patched.find((p: any) => p.id === el.id);
                 if (patch) {
-                  return { ...el, ...patch };
+                  return { ...el, ...patch, version: el.version + 1, updated: Date.now() };
                 }
                 return el;
               });
 
-              const addedElements = patched.filter((p) => !p.id || !currentIds.has(p.id));
-              addedElements.forEach(p => {
-                if (!p.id) p.id = Math.random().toString(36).substring(2, 9);
-                // Ensure required minimal fields are populated
-                if (!p.version) p.version = 1;
-                if (!p.versionNonce) p.versionNonce = Math.floor(Math.random() * 10000000);
-                if (typeof p.x !== "number") p.x = 100;
-                if (typeof p.y !== "number") p.y = 100;
-                newElements.push(p);
-              });
+              const addedSkeletons = patched.filter((p: any) => !p.id || !currentIds.has(p.id));
+              const addedElements = convertToExcalidrawElements(addedSkeletons.map((p: any) => ({
+                ...p,
+                width: p.width ?? 300,
+                height: p.height ?? 300,
+              })), { regenerateIds: true });
 
-              api.updateScene({ elements: newElements });
+              const finalElements = await convertLinksToImages([...newElements, ...addedElements], api);
+              const finalConverted = convertToExcalidrawElements(finalElements, { regenerateIds: false });
+              api.updateScene({ elements: finalConverted });
             }
           } catch (err) {
             console.error("AI returned malformed JSON or patch", err);

@@ -22,7 +22,10 @@ import { bindBindingElement } from "./binding";
 import {
   newArrowElement,
   newElement,
+  newEmbeddableElement,
   newFrameElement,
+  newFreeDrawElement,
+  newIframeElement,
   newImageElement,
   newLinearElement,
   newMagicFrameElement,
@@ -622,10 +625,31 @@ export const convertToExcalidrawElements = (
         });
         break;
       }
-      case "freedraw":
-      case "iframe":
+      case "freedraw": {
+        const { points = [], simulatePressure = true, ...rest } = element;
+        excalidrawElement = newFreeDrawElement({
+          points,
+          simulatePressure,
+          ...rest,
+        });
+        break;
+      }
+      case "iframe": {
+        const { x = 0, y = 0, ...rest } = element;
+        excalidrawElement = newIframeElement({
+          x,
+          y,
+          ...rest,
+        });
+        break;
+      }
       case "embeddable": {
-        excalidrawElement = element;
+        const { x = 0, y = 0, ...rest } = element;
+        excalidrawElement = newEmbeddableElement({
+          x,
+          y,
+          ...rest,
+        });
         break;
       }
 
