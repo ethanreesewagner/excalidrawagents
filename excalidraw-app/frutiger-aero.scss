@@ -110,23 +110,51 @@
     }
   }
 
-  /* Style the Canvas Background (The "Page") */
+  /* Style the Canvas Background (The "Page") - Ensure transparency to see body wallpaper */
+  .excalidraw,
+  .excalidraw-container,
+  .excalidraw__canvas-wrapper,
   canvas {
-    background: var(--bg-color) no-repeat center center fixed !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+
+  /* Force the body background to be the source of truth */
+  body {
+    background: var(--bg-image) no-repeat center center fixed !important;
     background-size: cover !important;
   }
 
   /* Global UI text readability on styled background */
   .excalidraw .layer-ui__wrapper {
-    label,
-    span:not([class*="Excalidraw"]):not([class*="icon"]),
+    /* Target common text containers */
+    .ToolIcon__label,
+    .Island label,
+    .Island span:not([class*="icon"]),
+    .Island div:not(:has(svg)):not(:empty),
     .dropdown-menu-item__text,
-    .help-icon {
+    .help-icon,
+    .excited-button,
+    .sidebar-trigger,
+    .footer-center span,
+    .zoom-controls span {
+      background: rgba(255, 255, 255, 0.95) !important;
+      color: #000 !important;
+      padding: 2px 6px !important;
+      margin: 1px 2px !important;
+      border-radius: 4px !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+      font-weight: 600 !important;
+      display: inline-block !important;
+    }
+
+    /* Specifically for the "To move canvas..." instructions */
+    .Hint {
       background: white !important;
       color: black !important;
-      padding: 1px 4px !important;
-      border-radius: 2px !important;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+      padding: 4px 12px !important;
+      border-radius: 4px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
     }
   }
 
