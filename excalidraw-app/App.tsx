@@ -382,6 +382,37 @@ const ExcalidrawWrapper = () => {
 
   const editorInterface = useEditorInterface();
 
+  useEffect(() => {
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        (event.code === "KeyI" || event.key === "i" || event.key === "I") &&
+        !event.altKey &&
+        !event.shiftKey
+      ) {
+        console.log("Excalidraw Shortcut: Ctrl+I triggered");
+        event.preventDefault();
+        event.stopPropagation();
+        if (excalidrawAPI) {
+          console.log("Excalidraw Shortcut: API available, toggling sidebar");
+          const { openSidebar } = excalidrawAPI.getAppState();
+          excalidrawAPI.updateScene({
+            appState: {
+              openSidebar: openSidebar?.tab === "aiedit" ? null : { tab: "aiedit" },
+            },
+          });
+        } else {
+          console.error("Excalidraw Shortcut: API not available");
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeydown, { capture: true });
+    return () => {
+      window.removeEventListener("keydown", handleKeydown, { capture: true });
+    };
+  }, [excalidrawAPI]);
+
   // initial state
   // ---------------------------------------------------------------------------
 

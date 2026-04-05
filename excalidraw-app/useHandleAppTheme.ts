@@ -15,7 +15,7 @@ export const useHandleAppTheme = () => {
       (localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_THEME) as
         | Theme
         | "system"
-        | null) || THEME.LIGHT
+        | null) || THEME.DARK
     );
   });
   const [editorTheme, setEditorTheme] = useState<Theme>(THEME.LIGHT);
