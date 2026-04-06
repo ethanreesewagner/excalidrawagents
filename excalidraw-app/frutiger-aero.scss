@@ -46,7 +46,6 @@
       0 0 15px rgba(255, 255, 255, 0.5) !important;
     border-radius: 8px 8px 3px 3px !important;
 
-    /* Add that classic Windows 7 header highlight */
     &::after {
       content: "";
       position: absolute;
@@ -60,8 +59,7 @@
     }
   }
 
-
-  /* Style the Canvas Background (The "Page") - Ensure transparency to see body wallpaper */
+  /* Style the Canvas Background */
   .excalidraw,
   .excalidraw-container,
   .excalidraw__canvas-wrapper,
@@ -76,9 +74,49 @@
     background-size: cover !important;
   }
 
+  /* Aero Toolbar */
+  .App-toolbar {
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.7) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0.2) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Floating Buttons */
+  .ToolIcon,
+  .ToolIcon__btn,
+  .excalidraw-button,
+  button:not(.excalidraw-button):not(.color-picker__button):not(.color-picker-swatch):not(.color-picker-label-swatch) {
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(230, 240, 255, 0.8) 49%,
+        rgba(210, 230, 255, 0.7) 50%,
+        rgba(230, 245, 255, 0.8) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+    color: #333 !important;
+
+    &:hover {
+      background: linear-gradient(180deg,
+          rgba(255, 255, 255, 1) 0%,
+          rgba(210, 240, 255, 1) 100%) !important;
+      box-shadow: 0 0 10px rgba(0, 162, 255, 0.4) !important;
+    }
+
+    &.active,
+    &[aria-pressed="true"],
+    &.ToolIcon--selected {
+      background: linear-gradient(180deg,
+          rgba(200, 230, 255, 0.9) 0%,
+          rgba(150, 210, 255, 0.9) 100%) !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+
   /* Global UI text readability on styled background */
-  .excalidraw .layer-ui__wrapper {
-    /* Target common text containers */
+  .layer-ui__wrapper {
     .ToolIcon__label,
     .Island label,
     .Island span:not([class*="icon"]),
@@ -99,7 +137,6 @@
       display: inline-block !important;
     }
 
-    /* Specifically for the "To move canvas..." instructions */
     .Hint {
       background: white !important;
       color: black !important;
@@ -109,45 +146,7 @@
     }
   }
 
-  /* Start Orb Styling (Main Menu Button) - Floating */
-  [data-testid="main-menu-trigger"],
-  .App-menu__button {
-    position: fixed !important;
-    top: 10px !important;
-    left: 10px !important;
-    z-index: 11 !important;
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 50% !important;
-    background: radial-gradient(circle at 50% 40%, #00bcff 0%, #0078d7 60%, #004578 100%) !important;
-    border: 2px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 0 15px rgba(0, 188, 255, 0.8), 0 2px 5px rgba(0, 0, 0, 0.5) !important;
-    position: relative;
-    overflow: visible;
-
-    &:hover {
-      box-shadow: 0 0 25px rgba(0, 220, 255, 1), 0 2px 5px rgba(0, 0, 0, 0.5) !important;
-      transform: scale(1.05);
-    }
-
-    svg {
-      color: white !important;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-    }
-  }
-
-
-  /* Hide Excalidraw's default canvas background */
-  canvas {
-    background-color: transparent !important;
-  }
-
-  /* Layer UI tweak */
-  .layer-ui__wrapper {
-    background: transparent !important;
-  }
-
-  /* Faked Windows Titlebar for sidebars */
+  /* Sidebar Explorer title bar faked */
   .sidebar--standard {
     padding-top: 30px !important;
     position: relative;
@@ -162,13 +161,34 @@
       font-weight: bold;
     }
   }
+
+  /* Start Orb Styling (Main Menu Button) */
+  .App-menu__button {
+    border-radius: 50% !important;
+    background: radial-gradient(circle at 50% 40%, #00bcff 0%, #0078d7 60%, #004578 100%) !important;
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 0 15px rgba(0, 188, 255, 0.8) !important;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(0, 220, 255, 1) !important;
+    }
+  }
 }
 
-/* Dark theme Aero (Glass Noir) */
+/* ------------------------------------------------------------------------- */
+/* Dark theme Aero (Glass Noir) Overrides */
+/* ------------------------------------------------------------------------- */
 .excalidraw.theme--dark,
 .excalidraw-app.theme--dark {
-  --bg-color: url('/aero-wallpaper.png') no-repeat center center fixed !important;
-  filter: hue-rotate(180deg) brightness(0.5) !important; /* Fast dark mode hack for the wallpaper */
+  --bg-color: transparent !important;
+
+  /* Noir Wallpaper Overlay on body */
+  & ~ body,
+  & {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    background-blend-mode: multiply !important;
+  }
 
   .Island,
   .Stack,
@@ -184,7 +204,6 @@
     color: #ffffff !important;
   }
 
-  /* Floating Aero Toolbar (Windows 7 Style) - Noir Variant */
   .App-toolbar {
     background: linear-gradient(135deg,
         rgba(0, 5, 20, 0.9) 0%,
@@ -192,13 +211,6 @@
         rgba(5, 15, 30, 0.8) 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
-
-    span, 
-    div:not(:has(svg)):not(:empty),
-    .ToolIcon__label {
-      background: rgba(0, 0, 0, 0.8) !important;
-      color: #fff !important;
-    }
   }
 
   /* Aggressive Noir Button Styling */
@@ -208,7 +220,7 @@
   .excalidraw-button,
   .sidebar-trigger,
   .LiveCollaborationTrigger,
-  button:not(.excalidraw-button) {
+  button:not(.excalidraw-button):not(.color-picker__button):not(.color-picker-swatch):not(.color-picker-label-swatch) {
     background: linear-gradient(180deg,
         rgba(50, 60, 80, 0.95) 0%,
         rgba(20, 30, 50, 0.85) 49%,
@@ -239,6 +251,24 @@
           rgba(0, 100, 255, 0.95) 0%,
           rgba(0, 50, 200, 0.95) 100%) !important;
       box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+    }
+  }
+
+  /* Dark mode readability containers */
+  .layer-ui__wrapper {
+    .ToolIcon__label,
+    .Island label,
+    .Island span:not([class*="icon"]),
+    .Island div:not(:has(svg)):not(:empty),
+    .dropdown-menu-item__text,
+    .help-icon,
+    .excited-button,
+    .sidebar-trigger,
+    .footer-center span,
+    .zoom-controls span {
+      background: rgba(0, 0, 0, 0.8) !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
   }
 }

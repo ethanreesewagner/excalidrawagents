@@ -386,7 +386,11 @@ const ExcalidrawWrapper = () => {
     const handleKeydown = (event: KeyboardEvent) => {
       if (
         (event.ctrlKey || event.metaKey) &&
-        (event.code === "KeyI" || event.key === "i" || event.key === "I") &&
+        (event.code === "KeyI" ||
+          event.key === "i" ||
+          event.key === "I" ||
+          event.key === "." ||
+          event.code === "Period") &&
         !event.altKey &&
         !event.shiftKey
       ) {
@@ -394,11 +398,14 @@ const ExcalidrawWrapper = () => {
         event.preventDefault();
         event.stopPropagation();
         if (excalidrawAPI) {
-          console.log("Excalidraw Shortcut: API available, toggling sidebar");
+          console.log("Excalidraw Shortcut: API available, toggling sidebar via updateScene");
           const { openSidebar } = excalidrawAPI.getAppState();
           excalidrawAPI.updateScene({
             appState: {
-              openSidebar: openSidebar?.tab === "aiedit" ? null : { tab: "aiedit" },
+              openSidebar:
+                openSidebar?.tab === "aiedit"
+                  ? null
+                  : { name: "default", tab: "aiedit" },
             },
           });
         } else {
