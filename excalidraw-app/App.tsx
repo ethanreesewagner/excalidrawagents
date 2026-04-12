@@ -1018,7 +1018,7 @@ const ExcalidrawWrapper = () => {
           }
         }}
         onAIAutocompleteRequest={async (prompt) => {
-          const backend = import.meta.env.VITE_APP_AI_BACKEND || "http://localhost:3016";
+          const backend = import.meta.env.VITE_APP_AI_BACKEND || "/api/autocomplete";
           if (!backend) {
             return null;
           }

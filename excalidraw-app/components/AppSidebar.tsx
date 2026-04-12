@@ -42,7 +42,7 @@ export const AppSidebar = () => {
     const promptStr = `The user wants to edit the canvas: "${aiPrompt}". Return a valid JSON array of element representations with the requested property changes or new element additions (e.g. strokeColor, backgroundColor, width, type: "rectangle"). No markdown block, just pure JSON array of objects with proper fields. Here are the current relevant elements:\n\n${JSON.stringify(targetElements)}`;
 
     try {
-      const backend = import.meta.env.VITE_APP_AI_BACKEND || "http://localhost:3016";
+      const backend = import.meta.env.VITE_APP_AI_BACKEND || "/api/autocomplete";
       const res = await fetch(`${backend}/v1/ai/autocomplete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
