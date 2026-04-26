@@ -51,7 +51,9 @@ export default async function handler(req, res) {
 2. If the user asks you to insert a picture from the web, draw shapes, arrows, or any other Excalidraw element, output a valid JSON array of Excalidraw elements wrapped in \`\`\`json. For pictures from the web, ALWAYS use type: "embeddable", and ALWAYS set "link" to a valid image URL. ALWAYS provide "width": 300 and "height": 300 (or other appropriate sizes) for any elements you create.
 3. Otherwise, for general text completion, math, or answers, just output the concise text reply.`;
 
-  const endpoint = process.env.AI_ENDPOINT || "https://models.inference.ai.azure.com/chat/completions";
+  const baseUrl =
+    process.env.AI_BASE_URL || "https://integrate.api.nvidia.com/v1";
+  const endpoint = process.env.AI_ENDPOINT || `${baseUrl}/chat/completions`;
 
   try {
     const response = await fetch(endpoint, {

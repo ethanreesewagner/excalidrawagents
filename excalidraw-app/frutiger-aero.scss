@@ -1,5 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
 
+/* SCORCHED EARTH TOOLBAR RESET - GLOBAL SCOPE */
+.App-toolbar, 
+.excalidraw .App-toolbar,
+.App-toolbar-container,
+.Stack_horizontal,
+.App-toolbar-content {
+  display: flex !important;
+  flex-direction: row !important;
+  position: fixed !important;
+  top: 15px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  max-width: unset !important;
+  max-height: unset !important;
+  background-clip: padding-box !important;
+  z-index: 9999 !important;
+  padding: 8px 20px !important;
+  gap: 12px !important;
+  box-sizing: border-box !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Force children to stay in row */
+.App-toolbar-container > *,
+.App-toolbar > *,
+.Stack_horizontal > * {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+}
+
 .excalidraw,
 .excalidraw-app {
   /* Windows 7 Aero Foundation */
@@ -27,8 +65,8 @@
   }
 
   /* Aero Glass Containers (Windows style) */
-  .Island,
-  .Stack,
+  .Island:not(.App-toolbar),
+  .Stack:not(.App-toolbar-container),
   .sidebar--standard,
   .panelRow {
     background: linear-gradient(135deg,
@@ -74,14 +112,52 @@
     background-size: cover !important;
   }
 
-  /* Aero Toolbar */
-  .App-toolbar {
-    background: linear-gradient(135deg,
-        rgba(255, 255, 255, 0.7) 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0.2) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Aero Toolbar - FORCE HORIZONTAL TOP - GLOBAL SCOPE */
+.App-toolbar,
+.excalidraw .App-toolbar {
+  position: fixed !important;
+  top: 15px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  flex-direction: row !important;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.2) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1000 !important;
+  padding: 5px 15px !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: unset !important;
+  max-width: unset !important;
+  display: flex !important;
+}
+
+.App-toolbar-content,
+.Stack_horizontal,
+.App-toolbar-container {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: unset !important;
+  max-width: unset !important;
+}
+
+.excalidraw,
+.excalidraw-app {
+
+  /* Hide Next.js Example Leakage */
+  h1, h2, h3, .App-router-heading, [class*="nextjs"] {
+    &:not(.excalidraw h1):not(.excalidraw h2):not(.excalidraw h3) {
+      display: none !important;
+    }
   }
 
   /* Floating Buttons */
@@ -190,8 +266,8 @@
     background-blend-mode: multiply !important;
   }
 
-  .Island,
-  .Stack,
+  .Island:not(.App-toolbar),
+  .Stack:not(.App-toolbar-container),
   .sidebar--standard,
   .panelRow,
   .context-menu,
@@ -204,14 +280,27 @@
     color: #ffffff !important;
   }
 
-  .App-toolbar {
+}
+
+/* Dark mode Toolbar fix - Global scope */
+.theme--dark .App-toolbar,
+.excalidraw.theme--dark .App-toolbar {
+    position: fixed !important;
+    top: 15px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    flex-direction: row !important;
     background: linear-gradient(135deg,
         rgba(0, 5, 20, 0.9) 0%,
         rgba(10, 20, 40, 0.85) 50%,
         rgba(5, 15, 30, 0.8) 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
-  }
+    display: flex !important;
+}
+
+.excalidraw.theme--dark,
+.excalidraw-app.theme--dark {
 
   /* Aggressive Noir Button Styling */
   .ToolIcon,

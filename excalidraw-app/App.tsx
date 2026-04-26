@@ -674,7 +674,53 @@ const ExcalidrawWrapper = () => {
     window.addEventListener(EVENT.BLUR, visibilityChange, false);
     document.addEventListener(EVENT.VISIBILITY_CHANGE, visibilityChange, false);
     window.addEventListener(EVENT.FOCUS, visibilityChange, false);
+
+    // Nuclear Toolbar Fix - V2
+    const fixToolbar = () => {
+      const toolbars = document.querySelectorAll(".App-toolbar");
+      if (toolbars.length > 0) {
+        toolbars.forEach((toolbar) => {
+          const el = toolbar as HTMLElement;
+          el.style.setProperty("position", "fixed", "important");
+          el.style.setProperty("top", "15px", "important");
+          el.style.setProperty("left", "50%", "important");
+          el.style.setProperty("transform", "translateX(-50%)", "important");
+          el.style.setProperty("flex-direction", "row", "important");
+          el.style.setProperty("display", "flex", "important");
+          el.style.setProperty("width", "auto", "important");
+          el.style.setProperty("height", "auto", "important");
+          el.style.setProperty("z-index", "9999", "important");
+          el.style.setProperty("padding", "5px 15px", "important");
+          el.style.setProperty("margin", "0", "important");
+        });
+
+        const containers = document.querySelectorAll(".App-toolbar-container");
+        containers.forEach((container) => {
+          const el = container as HTMLElement;
+          el.style.setProperty("display", "flex", "important");
+          el.style.setProperty("flex-direction", "row", "important");
+          el.style.setProperty("width", "auto", "important");
+          el.style.setProperty("height", "auto", "important");
+          el.style.setProperty("position", "relative", "important");
+          el.style.setProperty("top", "0", "important");
+        });
+
+        const stacks = document.querySelectorAll(".Stack_horizontal, .Stack");
+        stacks.forEach((stack) => {
+          const el = stack as HTMLElement;
+          // Most important: override the grid to flex if vertical
+          if (el.classList.contains("App-toolbar-content") || el.closest(".App-toolbar")) {
+            el.style.setProperty("display", "flex", "important");
+            el.style.setProperty("flex-direction", "row", "important");
+            el.style.setProperty("grid-auto-flow", "column", "important");
+          }
+        });
+      }
+    };
+    const timer = setInterval(fixToolbar, 200);
+
     return () => {
+      clearInterval(timer);
       window.removeEventListener(EVENT.HASHCHANGE, onHashChange, false);
       window.removeEventListener(EVENT.UNLOAD, onUnload, false);
       window.removeEventListener(EVENT.BLUR, visibilityChange, false);
@@ -1018,18 +1064,41 @@ const ExcalidrawWrapper = () => {
           }
         }}
         onAIAutocompleteRequest={async (prompt) => {
-          const backend = import.meta.env.VITE_APP_AI_BACKEND || "/api/autocomplete";
-          if (!backend) {
-            return null;
-          }
+          const env = import.meta.env as ImportMetaEnv & {
+            VITE_APP_AI_API_KEY?: string;
+            VITE_OPENAI_API_KEY?: string;
+          };
+          const backend = env.VITE_APP_AI_BACKEND?.trim() || "/api/autocomplete";
+          const normalizedBackend = backend.replace(/\/+$/, "");
+          const endpoint =
+            /\/v1\/ai\/autocomplete$/.test(normalizedBackend) ||
+            /\/api\/autocomplete$/.test(normalizedBackend)
+              ? normalizedBackend
+              : `${normalizedBackend}/v1/ai/autocomplete`;
+          const apiKey = env.VITE_APP_AI_API_KEY || env.VITE_OPENAI_API_KEY;
           try {
-            const res = await fetch(`${backend}/v1/ai/autocomplete`, {
+            const headers: Record<string, string> = {
+              "Content-Type": "application/json",
+            };
+            if (apiKey) {
+              headers.Authorization = `Bearer ${apiKey}`;
+            }
+            const res = await fetch(endpoint, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers,
               body: JSON.stringify({ prompt }),
             });
             if (!res.ok) {
-              throw new Error(await res.text());
+              const errorText = await res.text();
+              if (
+                res.status === 401 ||
+                /unauthorized|bad credentials/i.test(errorText)
+              ) {
+                throw new Error(
+                  "AI backend rejected credentials (401). Check OPENAI_API_KEY on the proxy server, or set VITE_APP_AI_API_KEY / VITE_OPENAI_API_KEY for direct auth.",
+                );
+              }
+              throw new Error(errorText);
             }
             return res.json();
           } catch (err) {
